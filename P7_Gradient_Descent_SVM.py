@@ -11,7 +11,6 @@ def hinge(v):
     return np.where(v >= 1, 0, 1 - v)
 
 
-# x is dxn, y is 1xn, th is dx1, th0 is 1x1
 def hinge_loss(x, y, th, th0):
     """
     Calculates the hinge loss for data set x
@@ -24,7 +23,6 @@ def hinge_loss(x, y, th, th0):
     return hinge(y * (np.dot(th.T, x) + th0))
 
 
-# x is dxn, y is 1xn, th is dx1, th0 is 1x1, lam is a scalar
 def svm_obj(x, y, th, th0, lam):
     """
     Calculates the SVM objective function as the mean of the hinge loss over all points and introduces regularization.
@@ -74,8 +72,8 @@ def d_svm_obj_th(x, y, th, th0, lam):
     return None
 
 
-# Returns the gradient of svm_obj(x, y, th, th0) with respect to th0
 def d_svm_obj_th0(x, y, th, th0, lam):
+    """Returns the gradient of svm_obj(x, y, th, th0) with respect to th0"""
     return None
 
 
