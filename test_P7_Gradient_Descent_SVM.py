@@ -31,3 +31,22 @@ class Test(TestCase):
         th1, th1_0 = sep_e_separator
         ans = svm_obj(x_1, y_1, th1, th1_0, .1)
         print(ans)
+
+    def test_d_hinge(self):
+        self.fail()
+
+    def test_d_hinge_loss_th(self):
+        self.fail()
+
+    def test_d_hinge_loss_th0(self):
+        self.fail()
+
+    def test_d_svm_obj_th(self):
+        self.fail()
+
+    def test_d_svm_obj_th0(self):
+        self.fail()
+
+    def test_svm_obj_grad(self):
+        self.fail()
+
