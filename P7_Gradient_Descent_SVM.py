@@ -59,51 +59,56 @@ def d_hinge(v):
 
 def d_hinge_loss_th(x, y, th, th0):
     """Returns the gradient of hinge_loss(x, y, th, th0) with respect to th"""
-    return d_hinge(y * (np.dot(th.T, x) + th0)) * (-y * x)
+    return d_hinge(y * (np.dot(th.T, x) + th0)) * y * x
 
 
 def d_hinge_loss_th0(x, y, th, th0):
     """Returns the gradient of hinge_loss(x, y, th, th0) with respect to th0"""
-    return d_hinge(y * (np.dot(th.T, x) + th0)) * (-y.T)
+    return d_hinge(y * (np.dot(th.T, x) + th0)) * y
 
 
 def d_svm_obj_th(x, y, th, th0, lam):
     """Returns the gradient of svm_obj(x, y, th, th0) with respect to th"""
-    return None
+    d_hinge_losses = d_hinge_loss_th(x, y, th, th0)
+    regular = 2*lam*th
+    return np.mean(d_hinge_losses, axis=1, keepdims=True) + regular
 
 
 def d_svm_obj_th0(x, y, th, th0, lam):
     """Returns the gradient of svm_obj(x, y, th, th0) with respect to th0"""
-    return None
+    d_hinge_losses = d_hinge_loss_th0(x, y, th, th0)
+    return np.mean(d_hinge_losses, axis=1, keepdims=True)
 
 
 def svm_obj_grad(X, y, th, th0, lam):
     """Returns the full gradient as a single vector (which includes both th, th0)"""
-    return None
+    vector_th = d_svm_obj_th(X, y, th, th0, lam)
+    vector_th0 = d_svm_obj_th0(X, y, th, th0, lam)
+    return np.vstack([vector_th, vector_th0])
 
 
 # Test case 2
-# X1 = np.array([[1, 2, 3, 9, 10]])
-# y1 = np.array([[1, 1, 1, -1, -1]])
-# th1, th10 = np.array([[-0.31202807]]), np.array([[1.834]])
-# X2 = np.array([[2, 3, 9, 12],
-#                [5, 2, 6, 5]])
-# y2 = np.array([[1, -1, 1, -1]])
-# th2, th20 = np.array([[-3., 15.]]).T, np.array([[2.]])
-#
-# d_hinge(np.array([[ 71.]])).tolist()
-# d_hinge(np.array([[ -23.]])).tolist()
-# d_hinge(np.array([[ 71, -23.]])).tolist()
-#
-# d_hinge_loss_th(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
-# d_hinge_loss_th(X2, y2, th2, th20).tolist()
-# d_hinge_loss_th0(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
-# d_hinge_loss_th0(X2, y2, th2, th20).tolist()
-#
-# d_svm_obj_th(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
-# d_svm_obj_th(X2, y2, th2, th20, 0.01).tolist()
-# d_svm_obj_th0(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
-# d_svm_obj_th0(X2, y2, th2, th20, 0.01).tolist()
-#
-# svm_obj_grad(X2, y2, th2, th20, 0.01).tolist()
-# svm_obj_grad(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
+X1 = np.array([[1, 2, 3, 9, 10]])
+y1 = np.array([[1, 1, 1, -1, -1]])
+th1, th10 = np.array([[-0.31202807]]), np.array([[1.834]])
+X2 = np.array([[2, 3, 9, 12],
+               [5, 2, 6, 5]])
+y2 = np.array([[1, -1, 1, -1]])
+th2, th20 = np.array([[-3., 15.]]).T, np.array([[2.]])
+
+d_hinge(np.array([[ 71.]])).tolist()
+d_hinge(np.array([[ -23.]])).tolist()
+d_hinge(np.array([[ 71, -23.]])).tolist()
+
+d_hinge_loss_th(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
+d_hinge_loss_th(X2, y2, th2, th20).tolist()
+d_hinge_loss_th0(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
+d_hinge_loss_th0(X2, y2, th2, th20).tolist()
+
+d_svm_obj_th(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
+d_svm_obj_th(X2, y2, th2, th20, 0.01).tolist()
+d_svm_obj_th0(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
+d_svm_obj_th0(X2, y2, th2, th20, 0.01).tolist()
+
+svm_obj_grad(X2, y2, th2, th20, 0.01).tolist()
+svm_obj_grad(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
