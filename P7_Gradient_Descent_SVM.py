@@ -1,5 +1,5 @@
 import numpy as np
-from P6_Gradient_Descent import num_grad
+from P6_Gradient_Descent import gd
 
 
 # Problem 7.1
@@ -70,7 +70,7 @@ def d_hinge_loss_th0(x, y, th, th0):
 def d_svm_obj_th(x, y, th, th0, lam):
     """Returns the gradient of svm_obj(x, y, th, th0) with respect to th"""
     d_hinge_losses = d_hinge_loss_th(x, y, th, th0)
-    regular = 2*lam*th
+    regular = 2 * lam * th
     return np.mean(d_hinge_losses, axis=1, keepdims=True) + regular
 
 
@@ -88,27 +88,66 @@ def svm_obj_grad(X, y, th, th0, lam):
 
 
 # Test case 2
-X1 = np.array([[1, 2, 3, 9, 10]])
-y1 = np.array([[1, 1, 1, -1, -1]])
-th1, th10 = np.array([[-0.31202807]]), np.array([[1.834]])
-X2 = np.array([[2, 3, 9, 12],
-               [5, 2, 6, 5]])
-y2 = np.array([[1, -1, 1, -1]])
-th2, th20 = np.array([[-3., 15.]]).T, np.array([[2.]])
+# X1 = np.array([[1, 2, 3, 9, 10]])
+# y1 = np.array([[1, 1, 1, -1, -1]])
+# th1, th10 = np.array([[-0.31202807]]), np.array([[1.834]])
+# X2 = np.array([[2, 3, 9, 12],
+#                [5, 2, 6, 5]])
+# y2 = np.array([[1, -1, 1, -1]])
+# th2, th20 = np.array([[-3., 15.]]).T, np.array([[2.]])
+#
+# d_hinge(np.array([[ 71.]])).tolist()
+# d_hinge(np.array([[ -23.]])).tolist()
+# d_hinge(np.array([[ 71, -23.]])).tolist()
+#
+# d_hinge_loss_th(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
+# d_hinge_loss_th(X2, y2, th2, th20).tolist()
+# d_hinge_loss_th0(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
+# d_hinge_loss_th0(X2, y2, th2, th20).tolist()
+#
+# d_svm_obj_th(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
+# d_svm_obj_th(X2, y2, th2, th20, 0.01).tolist()
+# d_svm_obj_th0(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
+# d_svm_obj_th0(X2, y2, th2, th20, 0.01).tolist()
+#
+# svm_obj_grad(X2, y2, th2, th20, 0.01).tolist()
+# svm_obj_grad(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
 
-d_hinge(np.array([[ 71.]])).tolist()
-d_hinge(np.array([[ -23.]])).tolist()
-d_hinge(np.array([[ 71, -23.]])).tolist()
+# Problem 7.3
+def batch_svm_min(data, labels, lam):
+    """Gradient descent minimizer for the SVM objective."""
+    def svm_min_step_size_fn(i):
+        return 2 / (i + 1) ** 0.5
 
-d_hinge_loss_th(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
-d_hinge_loss_th(X2, y2, th2, th20).tolist()
-d_hinge_loss_th0(X2[:,0:1], y2[:,0:1], th2, th20).tolist()
-d_hinge_loss_th0(X2, y2, th2, th20).tolist()
+    init = np.zeros((data.shape[0] + 1, 1))
 
-d_svm_obj_th(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
-d_svm_obj_th(X2, y2, th2, th20, 0.01).tolist()
-d_svm_obj_th0(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
-d_svm_obj_th0(X2, y2, th2, th20, 0.01).tolist()
+    def f(th):
+        return svm_obj(data, labels, th[:-1, :], th[-1:, :], lam)
 
-svm_obj_grad(X2, y2, th2, th20, 0.01).tolist()
-svm_obj_grad(X2[:,0:1], y2[:,0:1], th2, th20, 0.01).tolist()
+    def df(th):
+        return svm_obj_grad(data, labels, th[:-1, :], th[-1:, :], lam)
+
+    x, fs, xs = gd(f, df, init, svm_min_step_size_fn, 10)
+    return x, fs, xs
+
+
+# Test cases for problem 7.3
+def separable_medium():
+    X = np.array([[2, -1, 1, 1],
+                  [-2, 2, 2, -1]])
+    y = np.array([[1, -1, 1, -1]])
+    return X, y
+
+
+def package_ans(gd_vals):
+    x, fs, xs = gd_vals
+    return [x.tolist(), [fs[0], fs[-1]], [xs[0].tolist(), xs[-1].tolist()]]
+
+
+sep_m_separator = np.array([[2.69231855], [0.67624906]]), np.array([[-3.02402521]])
+
+x_1, y_1 = super_simple_separable()
+ans = package_ans(batch_svm_min(x_1, y_1, 0.0001))
+
+x_1, y_1 = separable_medium()
+ans = package_ans(batch_svm_min(x_1, y_1, 0.0001))
